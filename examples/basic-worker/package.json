@@ -7,7 +7,7 @@
     "deploy": "wrangler deploy --config wrangler.jsonc"
   },
   "dependencies": {
-    "ddys-lark-bot": "^0.1.0"
+    "ddys-lark-bot": "^0.1.1"
   },
   "devDependencies": {
     "wrangler": ">=4.0.0"

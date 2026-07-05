@@ -113,6 +113,42 @@ export function createUrlVerification(challenge = 'challenge-code') {
   };
 }
 
+export function createLegacyMessageEvent(text, extra = {}) {
+  return {
+    token: 'verification-token',
+    challenge: extra.challenge,
+    type: 'event_callback',
+    event: {
+      type: 'message',
+      app_id: 'cli_test',
+      tenant_key: extra.tenantKey || 'tenant-1',
+      open_id: extra.openId || 'ou_admin',
+      user_id: extra.userId || 'user_admin',
+      open_chat_id: extra.chatId || 'oc_legacy',
+      chat_type: extra.chatType || 'group',
+      message_id: extra.messageId || 'om_legacy',
+      msg_type: extra.messageType || 'text',
+      text_without_at_bot: text,
+      content: extra.content
+    }
+  };
+}
+
+export function createPostMessageEvent(text, extra = {}) {
+  return createMessageEvent('', {
+    ...extra,
+    messageType: 'post',
+    content: JSON.stringify({
+      title: extra.title || '',
+      content: [
+        [
+          { tag: 'text', text }
+        ]
+      ]
+    })
+  });
+}
+
 export async function signedRequest(url, payload, init = {}) {
   const body = init.encrypt ? JSON.stringify({ encrypt: await encryptPayload(payload, init.encryptKey || 'encrypt-key') }) : JSON.stringify(payload);
   const timestamp = init.timestamp || '2000000000';

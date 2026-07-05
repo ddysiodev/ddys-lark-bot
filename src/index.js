@@ -8,11 +8,11 @@ import {
   LarkSecurityError,
   decodeLarkEventBody,
   getLarkEventId,
-  getLarkEventType,
   getLarkMessage,
   getUrlVerificationChallenge,
   isActorAllowed,
   isAdmin,
+  isLarkMessageEvent,
   isUrlVerification,
   verifyLarkRequest,
   verifyVerificationToken
@@ -22,8 +22,8 @@ export { DEFAULTS, VERSION, ConfigError, getConfig, parseBoolean, parseIdSet, no
 export { TimedMap, SearchCache, InteractionDeduper, createSearchCache, createInteractionDeduper, sharedSearchCache, sharedInteractionDeduper, normalizeQuery, buildCacheKey } from './cache-store.js';
 export { searchDdys, getLatest, getHot, fetchDdysList, buildDdysUrl, normalizeItems, extractItems, normalizeItem } from './ddys-client.js';
 export { LARK_ENDPOINTS, callLarkApi, getTenantAccessToken, replyMessage, sendMessage, sharedTenantTokenCache, updateMessage } from './lark-api.js';
-export { LarkSecurityError, decodeLarkEventBody, decryptLarkEncrypt, getLarkChatId, getLarkEventId, getLarkEventType, getLarkMessage, getLarkSenderIds, getLarkTenantKey, getUrlVerificationChallenge, getVerificationToken, isActorAllowed, isAdmin, isUrlVerification, verifyLarkRequest, verifyVerificationToken } from './security.js';
-export { LarkEventType, LarkMessageType, ackResponse, cardMessage, extractTextFromMessage, parseLarkCommand, renderDiagnostics, renderHelp, renderResultMessage, resultButtons, resultsToCard, resultsToTextLines, textMessage } from './format.js';
+export { LarkSecurityError, decodeLarkEventBody, decryptLarkEncrypt, getLarkChatId, getLarkEventId, getLarkEventType, getLarkMessage, getLarkSenderIds, getLarkTenantKey, getUrlVerificationChallenge, getVerificationToken, isActorAllowed, isAdmin, isLarkMessageEvent, isUrlVerification, verifyLarkRequest, verifyVerificationToken } from './security.js';
+export { LarkEventType, LarkMessageType, ackResponse, cardMessage, extractTextFromMessage, extractTextFromPostContent, parseLarkCommand, renderDiagnostics, renderHelp, renderResultMessage, resultButtons, resultsToCard, resultsToTextLines, textMessage } from './format.js';
 
 export function createDdysLarkBot(options = {}) {
   return {
@@ -127,7 +127,7 @@ export default createDdysLarkBot();
 export async function handleLarkEventPayload(payload, config, runtime = {}) {
   if (!payload || typeof payload !== 'object') return { type: 'ack', data: ackResponse('unsupported') };
   if (isUrlVerification(payload)) return { type: 'challenge', data: { challenge: getUrlVerificationChallenge(payload) } };
-  if (getLarkEventType(payload) !== 'im.message.receive_v1') return { type: 'ack', data: ackResponse('ignored') };
+  if (!isLarkMessageEvent(payload)) return { type: 'ack', data: ackResponse('ignored') };
   if (!isActorAllowed(payload, config)) {
     return {
       type: 'reply',

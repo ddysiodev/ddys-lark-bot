@@ -12,6 +12,8 @@
 - Encrypt Key 加密回调解密
 - Verification Token 校验
 - `im.message.receive_v1` 文本消息命令
+- 兼容旧版 `event_callback/message` 事件结构
+- 支持从飞书 `post` 富文本消息中提取命令文本
 - `/ddys search 关键词`、`/ddys latest`、`/ddys hot`、`/ddys help`
 - 管理员命令：`/ddys diag`、`/ddys clearcache`
 - 私聊直接发送关键词搜索；群聊需要 `/ddys`、`ddys` 或 `低端影视` 前缀

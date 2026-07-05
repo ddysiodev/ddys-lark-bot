@@ -5,6 +5,7 @@ export const LarkMessageType = {
 
 export const LarkEventType = {
   MESSAGE_RECEIVE: 'im.message.receive_v1',
+  LEGACY_MESSAGE: 'message',
   URL_VERIFICATION: 'url_verification'
 };
 
@@ -47,7 +48,7 @@ export function renderHelp(config) {
 export function renderDiagnostics(config, runtime) {
   return [
     'DDYS Lark Bot diagnostics',
-    `version: ${config.version || '0.1.0'}`,
+    `version: ${config.version || '0.1.1'}`,
     `apiBase: ${config.apiBase}`,
     `larkApiBase: ${config.larkApiBase}`,
     `eventsPath: ${config.eventsPath}`,
@@ -142,15 +143,26 @@ export function parseLarkCommand(text, message = {}) {
 }
 
 export function extractTextFromMessage(message) {
-  if (!message || message.message_type !== 'text') return '';
+  if (!message) return '';
+  const messageType = message.message_type || message.msg_type;
   const content = message.content;
-  if (typeof content !== 'string') return '';
+  if (messageType !== 'text' && messageType !== 'post') return '';
+  if (typeof content !== 'string') return String(message.text || message.text_without_at_bot || '').trim();
   try {
     const parsed = JSON.parse(content);
+    if (messageType === 'post') return extractTextFromPostContent(parsed);
     return String(parsed.text || '').trim();
   } catch {
     return content.trim();
   }
+}
+
+export function extractTextFromPostContent(content) {
+  if (!content || typeof content !== 'object') return '';
+  const parts = [];
+  if (content.title) parts.push(content.title);
+  collectPostText(content.content, parts);
+  return parts.join(' ').replace(/\s+/g, ' ').trim();
 }
 
 function resultToMarkdown(item, index) {
@@ -184,6 +196,19 @@ function stripPrefix(text) {
 
 function splitWords(text) {
   return String(text || '').trim().split(/\s+/).filter(Boolean);
+}
+
+function collectPostText(value, parts) {
+  if (Array.isArray(value)) {
+    for (const item of value) collectPostText(item, parts);
+    return;
+  }
+  if (!value || typeof value !== 'object') return;
+  if (value.tag === 'text' || value.tag === 'a' || value.tag === 'at') {
+    const text = value.text || value.name || '';
+    if (text) parts.push(text);
+  }
+  for (const key of ['content', 'elements']) collectPostText(value[key], parts);
 }
 
 function escapeMarkdown(value) {

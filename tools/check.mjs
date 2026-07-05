@@ -63,7 +63,7 @@ async function checkSyntax() {
 async function checkPackage() {
   const pkg = JSON.parse(await read('package.json'));
   assert(pkg.name === 'ddys-lark-bot', 'package name mismatch.');
-  assert(pkg.version === '0.1.0', 'package version mismatch.');
+  assert(pkg.version === '0.1.1', 'package version mismatch.');
   assert(pkg.type === 'module', 'package must be ESM.');
   assert(pkg.exports?.['.']?.import === './src/index.js', 'package root export must point at source entry.');
   assert(pkg.exports?.['.']?.types === './index.d.ts', 'package root export must expose types.');
@@ -86,19 +86,19 @@ async function checkRuntime() {
     'handleLarkEventPayload',
     'verifyLarkRequest',
     'decodeLarkEventBody',
-    'im.message.receive_v1',
+    'isLarkMessageEvent',
     'waitUntil',
     'process?.env',
     'replyMessage'
   ]) assert(entry.includes(fragment), `entry missing ${fragment}.`);
 
   const security = await read('src/security.js');
-  for (const fragment of ['x-lark-signature', 'x-lark-request-timestamp', 'x-lark-request-nonce', 'SHA-256', 'AES-CBC', 'verification token', 'isActorAllowed']) {
+  for (const fragment of ['x-lark-signature', 'x-lark-request-timestamp', 'x-lark-request-nonce', 'SHA-256', 'AES-CBC', 'verification token', 'event_callback', 'isActorAllowed']) {
     assert(security.toLowerCase().includes(fragment.toLowerCase()), `security missing ${fragment}.`);
   }
 
   const format = await read('src/format.js');
-  for (const fragment of ['interactive', 'lark_md', 'wide_screen_mode', 'parseLarkCommand', 'extractTextFromMessage', 'clearcache']) {
+  for (const fragment of ['im.message.receive_v1', 'interactive', 'lark_md', 'wide_screen_mode', 'parseLarkCommand', 'extractTextFromMessage', 'extractTextFromPostContent', 'clearcache']) {
     assert(format.includes(fragment), `format missing ${fragment}.`);
   }
 
@@ -113,7 +113,7 @@ async function checkRuntime() {
   }
 
   const types = await read('index.d.ts');
-  for (const fragment of ['DdysLarkConfig', 'createDdysLarkBot', 'handleLarkEvent', 'handleLarkEventPayload', 'verifyLarkRequest', 'decodeLarkEventBody', 'InteractionDeduper', 'replyMessage']) {
+  for (const fragment of ['DdysLarkConfig', 'createDdysLarkBot', 'handleLarkEvent', 'handleLarkEventPayload', 'verifyLarkRequest', 'decodeLarkEventBody', 'isLarkMessageEvent', 'extractTextFromPostContent', 'InteractionDeduper', 'replyMessage']) {
     assert(types.includes(fragment), `types missing ${fragment}.`);
   }
 }
@@ -122,7 +122,7 @@ async function checkDocs() {
   const en = await read('README.md');
   const zh = await read('README.zh-CN.md');
   assert(en.includes('[中文](README.zh-CN.md)') && zh.includes('[English](README.md)'), 'READMEs must link to each other.');
-  for (const fragment of ['ddys-lark-bot', 'X-Lark-Signature', 'X-Lark-Request-Timestamp', 'Encrypt Key', 'Verification Token', 'im.message.receive_v1', 'message card', 'DDYS_LARK_APP_ID', 'DDYS_LARK_DEFER_REPLIES', 'FEISHU_APP_ID']) {
+  for (const fragment of ['ddys-lark-bot', 'X-Lark-Signature', 'X-Lark-Request-Timestamp', 'Encrypt Key', 'Verification Token', 'im.message.receive_v1', 'event_callback/message', 'post', 'message card', 'DDYS_LARK_APP_ID', 'DDYS_LARK_DEFER_REPLIES', 'FEISHU_APP_ID']) {
     assert(en.includes(fragment) && zh.includes(fragment), `READMEs missing ${fragment}.`);
   }
 }
@@ -134,11 +134,11 @@ async function checkExamples() {
   assert(workerConfig.compatibility_date === '2026-07-05', 'Worker example must pin compatibility date.');
   assert(workerConfig.vars?.DDYS_LARK_EVENTS_PATH === '/lark/events', 'Worker example must set Lark events path.');
   const workerPkg = JSON.parse(await read('examples/basic-worker/package.json'));
-  assert(workerPkg.dependencies?.['ddys-lark-bot'] === '^0.1.0', 'Worker example dependency must match package version.');
+  assert(workerPkg.dependencies?.['ddys-lark-bot'] === '^0.1.1', 'Worker example dependency must match package version.');
   const node = await read('examples/basic-node/src/server.js');
   assert(node.includes('createServer') && node.includes('duplex'), 'Node example must adapt incoming requests to Web Request.');
   const nodePkg = JSON.parse(await read('examples/basic-node/package.json'));
-  assert(nodePkg.dependencies?.['ddys-lark-bot'] === '^0.1.0', 'Node example dependency must match package version.');
+  assert(nodePkg.dependencies?.['ddys-lark-bot'] === '^0.1.1', 'Node example dependency must match package version.');
 }
 
 async function checkForbiddenFiles() {

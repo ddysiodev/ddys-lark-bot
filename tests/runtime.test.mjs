@@ -10,6 +10,7 @@ import {
   handleLarkCommand,
   handleLarkEvent,
   handleLarkEventPayload,
+  isLarkMessageEvent,
   normalizeItems,
   parseLarkCommand,
   replyMessage,
@@ -19,7 +20,7 @@ import {
   updateMessage,
   verifyLarkRequest
 } from '../src/index.js';
-import { baseConfig, createMessageEvent, createRecordingFetch, createUrlVerification, encryptPayload, readJson, signedRequest } from './helpers.mjs';
+import { baseConfig, createLegacyMessageEvent, createMessageEvent, createPostMessageEvent, createRecordingFetch, createUrlVerification, encryptPayload, readJson, signedRequest } from './helpers.mjs';
 
 test('webhook verifies Lark signature and handles URL verification', async () => {
   const request = await signedRequest('https://example.com/lark/events', createUrlVerification('hello'));
@@ -138,6 +139,25 @@ test('private chats support bare search while group chats ignore unprefixed mess
   assert.equal(p2p.type, 'reply');
   assert.equal(JSON.parse(p2p.data.content).header.title.content, 'DDYS 搜索：matrix');
   assert.deepEqual(parseLarkCommand('/ddys 清缓存'), { name: 'clearcache', query: '', raw: '/ddys 清缓存' });
+});
+
+test('legacy event_callback message payloads are normalized and handled', async () => {
+  const { fetchImpl } = createRecordingFetch();
+  const config = getConfig(baseConfig());
+  const payload = createLegacyMessageEvent('/ddys search matrix');
+  const result = await handleLarkEventPayload(payload, config, { fetch: fetchImpl });
+  assert.equal(isLarkMessageEvent(payload), true);
+  assert.equal(result.messageId, 'om_legacy');
+  assert.equal(result.data.msg_type, 'interactive');
+  assert.equal(JSON.parse(result.data.content).header.title.content, 'DDYS 搜索：matrix');
+});
+
+test('post rich-text message content can carry DDYS commands', async () => {
+  const { fetchImpl } = createRecordingFetch();
+  const config = getConfig(baseConfig());
+  const result = await handleLarkEventPayload(createPostMessageEvent('/ddys search matrix'), config, { fetch: fetchImpl });
+  assert.equal(result.type, 'reply');
+  assert.equal(JSON.parse(result.data.content).header.title.content, 'DDYS 搜索：matrix');
 });
 
 test('allowlists block unauthorized users, chats, and tenants', async () => {

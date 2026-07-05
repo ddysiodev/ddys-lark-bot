@@ -1,6 +1,6 @@
 {
   "name": "ddys-lark-bot",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Official Feishu/Lark bot integration for the DDYS API with event callbacks, signature verification, encrypted callbacks, message cards, access control, diagnostics, and cache support.",
   "type": "module",
   "license": "MIT",

@@ -157,6 +157,7 @@ export function isUrlVerification(payload: Record<string, unknown>): boolean;
 export function getUrlVerificationChallenge(payload: Record<string, unknown>): string;
 export function getLarkEventId(payload: Record<string, unknown>): string;
 export function getLarkEventType(payload: Record<string, unknown>): string;
+export function isLarkMessageEvent(payload: Record<string, unknown>): boolean;
 export function getLarkSenderIds(payload: Record<string, unknown>): { openId: string; userId: string; unionId: string };
 export function getLarkMessage(payload: Record<string, unknown>): Record<string, unknown>;
 export function getLarkChatId(payload: Record<string, unknown>): string;
@@ -190,3 +191,4 @@ export function resultsToTextLines(results: SearchResult[], config: DdysLarkConf
 export function resultButtons(results: SearchResult[]): unknown[];
 export function parseLarkCommand(text: string, message?: Record<string, unknown>): { name: string; query: string; raw: string };
 export function extractTextFromMessage(message: Record<string, unknown>): string;
+export function extractTextFromPostContent(content: Record<string, unknown>): string;

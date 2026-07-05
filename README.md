@@ -12,6 +12,8 @@ Official Feishu/Lark bot integration for the DDYS API. It receives Lark event ca
 - Encrypt Key callback decryption
 - Verification Token validation
 - `im.message.receive_v1` text commands
+- Legacy `event_callback/message` event compatibility
+- Command extraction from Lark `post` rich-text messages
 - `/ddys search query`, `/ddys latest`, `/ddys hot`, `/ddys help`
 - Admin commands: `/ddys diag`, `/ddys clearcache`
 - Private-chat bare keyword search; group chats require `/ddys`, `ddys`, or `低端影视`

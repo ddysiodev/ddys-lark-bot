@@ -89,20 +89,37 @@ export function getLarkEventId(payload) {
 }
 
 export function getLarkEventType(payload) {
-  return String(payload?.header?.event_type || payload?.type || '').trim();
+  return String(payload?.header?.event_type || payload?.event?.type || payload?.type || '').trim();
+}
+
+export function isLarkMessageEvent(payload) {
+  const type = getLarkEventType(payload);
+  return type === 'im.message.receive_v1'
+    || (payload?.type === 'event_callback' && payload?.event?.type === 'message');
 }
 
 export function getLarkSenderIds(payload) {
   const senderId = payload?.event?.sender?.sender_id || payload?.sender?.sender_id || {};
   return {
-    openId: String(senderId.open_id || payload?.event?.sender?.open_id || payload?.sender?.open_id || '').trim(),
-    userId: String(senderId.user_id || payload?.event?.sender?.user_id || payload?.sender?.user_id || '').trim(),
-    unionId: String(senderId.union_id || payload?.event?.sender?.union_id || payload?.sender?.union_id || '').trim()
+    openId: String(senderId.open_id || payload?.event?.sender?.open_id || payload?.event?.open_id || payload?.sender?.open_id || '').trim(),
+    userId: String(senderId.user_id || payload?.event?.sender?.user_id || payload?.event?.user_id || payload?.sender?.user_id || '').trim(),
+    unionId: String(senderId.union_id || payload?.event?.sender?.union_id || payload?.event?.union_id || payload?.sender?.union_id || '').trim()
   };
 }
 
 export function getLarkMessage(payload) {
-  return payload?.event?.message || payload?.message || {};
+  if (payload?.event?.message || payload?.message) return payload?.event?.message || payload?.message || {};
+  const event = payload?.event || {};
+  if (!event || typeof event !== 'object') return {};
+  if (!event.message_id && !event.msg_type && !event.text && !event.text_without_at_bot) return {};
+  const text = event.text_without_at_bot || event.text || '';
+  return {
+    message_id: event.message_id || event.open_message_id || event.message_id_v2 || '',
+    chat_id: event.open_chat_id || event.chat_id || '',
+    chat_type: event.chat_type || event.chat_type_v2 || '',
+    message_type: event.message_type || event.msg_type || 'text',
+    content: event.content || JSON.stringify({ text })
+  };
 }
 
 export function getLarkChatId(payload) {
