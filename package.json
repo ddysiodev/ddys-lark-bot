@@ -1,0 +1,28 @@
+{
+  "name": "ddys-lark-bot",
+  "version": "0.1.0",
+  "description": "Official Feishu/Lark bot integration for the DDYS API with event callbacks, signature verification, encrypted callbacks, message cards, access control, diagnostics, and cache support.",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://www.npmjs.com/package/ddys-lark-bot",
+  "publishConfig": { "access": "public" },
+  "repository": { "type": "git", "url": "git+https://github.com/ddysiodev/ddys-lark-bot.git" },
+  "bugs": { "url": "https://github.com/ddysiodev/ddys-lark-bot/issues" },
+  "keywords": ["ddys", "feishu", "lark", "lark-bot", "bot", "message-card", "event-callback", "api"],
+  "exports": {
+    ".": { "types": "./index.d.ts", "import": "./src/index.js" },
+    "./config": { "types": "./index.d.ts", "import": "./src/config.js" },
+    "./cache": { "types": "./index.d.ts", "import": "./src/cache-store.js" },
+    "./ddys-client": { "types": "./index.d.ts", "import": "./src/ddys-client.js" },
+    "./lark-api": { "types": "./index.d.ts", "import": "./src/lark-api.js" },
+    "./security": { "types": "./index.d.ts", "import": "./src/security.js" }
+  },
+  "main": "./src/index.js",
+  "types": "./index.d.ts",
+  "files": ["src", "examples", "index.d.ts", "README.md", "README.zh-CN.md", "LICENSE", ".env.example"],
+  "scripts": {
+    "check": "node tools/check.mjs",
+    "test": "node tools/check.mjs && node --test tests/*.test.mjs"
+  },
+  "engines": { "node": ">=20.0.0" }
+}

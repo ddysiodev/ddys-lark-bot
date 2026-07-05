@@ -1,0 +1,12 @@
+{
+  "name": "ddys-lark-bot-basic-node",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "ddys-lark-bot": "^0.1.0"
+  },
+  "engines": { "node": ">=20.0.0" }
+}

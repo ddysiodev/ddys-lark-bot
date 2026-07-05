@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ddys-lark-bot",
+  "main": "src/index.js",
+  "compatibility_date": "2026-07-05",
+  "vars": {
+    "DDYS_LARK_EVENTS_PATH": "/lark/events",
+    "DDYS_LARK_API_BASE": "https://open.feishu.cn/open-apis",
+    "DDYS_API_BASE": "https://ddys.io/api/v1",
+    "DDYS_PUBLIC_BASE": "https://ddys.io"
+  }
+}
