@@ -118,7 +118,9 @@ export function getLarkMessage(payload) {
     chat_id: event.open_chat_id || event.chat_id || '',
     chat_type: event.chat_type || event.chat_type_v2 || '',
     message_type: event.message_type || event.msg_type || 'text',
-    content: event.content || JSON.stringify({ text })
+    content: event.content || JSON.stringify({ text }),
+    text,
+    text_without_at_bot: event.text_without_at_bot || ''
   };
 }
 

@@ -10,6 +10,7 @@ import {
   handleLarkCommand,
   handleLarkEvent,
   handleLarkEventPayload,
+  extractTextFromMessage,
   isLarkMessageEvent,
   normalizeItems,
   parseLarkCommand,
@@ -150,6 +151,19 @@ test('legacy event_callback message payloads are normalized and handled', async 
   assert.equal(result.messageId, 'om_legacy');
   assert.equal(result.data.msg_type, 'interactive');
   assert.equal(JSON.parse(result.data.content).header.title.content, 'DDYS 搜索：matrix');
+});
+
+test('legacy event_callback object content is handled without losing text fallback', async () => {
+  const { fetchImpl } = createRecordingFetch();
+  const config = getConfig(baseConfig());
+  const payload = createLegacyMessageEvent('/ddys search matrix', {
+    messageId: 'om_legacy_object',
+    content: { text: '/ddys search matrix' }
+  });
+  const result = await handleLarkEventPayload(payload, config, { fetch: fetchImpl });
+  assert.equal(result.messageId, 'om_legacy_object');
+  assert.equal(JSON.parse(result.data.content).header.title.content, 'DDYS 搜索：matrix');
+  assert.equal(extractTextFromMessage({ message_type: 'text', content: { text: '/ddys help' } }), '/ddys help');
 });
 
 test('post rich-text message content can carry DDYS commands', async () => {

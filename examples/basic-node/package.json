@@ -6,7 +6,7 @@
     "start": "node src/server.js"
   },
   "dependencies": {
-    "ddys-lark-bot": "^0.1.1"
+    "ddys-lark-bot": "^0.1.2"
   },
   "engines": { "node": ">=20.0.0" }
 }

@@ -63,7 +63,7 @@ async function checkSyntax() {
 async function checkPackage() {
   const pkg = JSON.parse(await read('package.json'));
   assert(pkg.name === 'ddys-lark-bot', 'package name mismatch.');
-  assert(pkg.version === '0.1.1', 'package version mismatch.');
+  assert(pkg.version === '0.1.2', 'package version mismatch.');
   assert(pkg.type === 'module', 'package must be ESM.');
   assert(pkg.exports?.['.']?.import === './src/index.js', 'package root export must point at source entry.');
   assert(pkg.exports?.['.']?.types === './index.d.ts', 'package root export must expose types.');
@@ -134,11 +134,11 @@ async function checkExamples() {
   assert(workerConfig.compatibility_date === '2026-07-05', 'Worker example must pin compatibility date.');
   assert(workerConfig.vars?.DDYS_LARK_EVENTS_PATH === '/lark/events', 'Worker example must set Lark events path.');
   const workerPkg = JSON.parse(await read('examples/basic-worker/package.json'));
-  assert(workerPkg.dependencies?.['ddys-lark-bot'] === '^0.1.1', 'Worker example dependency must match package version.');
+  assert(workerPkg.dependencies?.['ddys-lark-bot'] === '^0.1.2', 'Worker example dependency must match package version.');
   const node = await read('examples/basic-node/src/server.js');
   assert(node.includes('createServer') && node.includes('duplex'), 'Node example must adapt incoming requests to Web Request.');
   const nodePkg = JSON.parse(await read('examples/basic-node/package.json'));
-  assert(nodePkg.dependencies?.['ddys-lark-bot'] === '^0.1.1', 'Node example dependency must match package version.');
+  assert(nodePkg.dependencies?.['ddys-lark-bot'] === '^0.1.2', 'Node example dependency must match package version.');
 }
 
 async function checkForbiddenFiles() {

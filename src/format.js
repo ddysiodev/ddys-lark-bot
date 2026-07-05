@@ -48,7 +48,7 @@ export function renderHelp(config) {
 export function renderDiagnostics(config, runtime) {
   return [
     'DDYS Lark Bot diagnostics',
-    `version: ${config.version || '0.1.1'}`,
+    `version: ${config.version || '0.1.2'}`,
     `apiBase: ${config.apiBase}`,
     `larkApiBase: ${config.larkApiBase}`,
     `eventsPath: ${config.eventsPath}`,
@@ -147,6 +147,10 @@ export function extractTextFromMessage(message) {
   const messageType = message.message_type || message.msg_type;
   const content = message.content;
   if (messageType !== 'text' && messageType !== 'post') return '';
+  if (content && typeof content === 'object') {
+    if (messageType === 'post') return extractTextFromPostContent(content);
+    return String(content.text || message.text || message.text_without_at_bot || '').trim();
+  }
   if (typeof content !== 'string') return String(message.text || message.text_without_at_bot || '').trim();
   try {
     const parsed = JSON.parse(content);
